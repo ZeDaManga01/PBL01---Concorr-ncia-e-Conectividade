@@ -19,7 +19,7 @@ user_in = input('Insira a porta de conexão com o servidor ou pressione ENTER')
 if user_in != '':
     PORT = int(user_in)
 
-origem =  (HOST, PORT)
+origem =  (HOST, PORT)  
 tcp.bind(origem)
 tcp.listen(1)
 
@@ -31,8 +31,18 @@ while True:
         if not info: break
 
         if info in trechos_disponiveis and trechos_disponiveis[info] >= 1:
-            trechos_disponiveis[info] -= 1
-            print(f'Trecho {info} disponivel, compra realizada\n')
+
+            disponivel = 'S'
+            tcp.sendall(str.encode(info))
+            resp = con.recv(1024).decode('utf-8')
+            if resp == 'S':
+                trechos_disponiveis[info] -= 1
+                compra_realizada = 'S'
+                tcp.sendall(str.encode(compra_realizada))
+            else:
+                compra_realizada = 'N'
+                tcp.sendall(str.encode(compra_realizada))
+
         
         else:
             print(f'Trecho {info} indisponivel\n')
