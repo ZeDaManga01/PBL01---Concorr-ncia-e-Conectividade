@@ -9,44 +9,68 @@ trechos_disponiveis = {
     "São Paulo > Curitiba": 5
 }
 
-tcp = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-
 user_in = input('Insira o endereço IP ou pressione Enter:\n')
 if user_in != '':
     HOST = user_in
 
-user_in = input('Insira a porta de conexão com o servidor ou pressione ENTER')
+user_in = input('Insira a porta de conexão com o servidor ou pressione ENTER\n')
 if user_in != '':
     PORT = int(user_in)
 
-origem =  (HOST, PORT)  
+tcp = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
+tcp.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+
+origem = (HOST, PORT)
 tcp.bind(origem)
 tcp.listen(1)
 
-while True:
-    con, cliente = tcp.accept()
-    print(f'Conectado á: {cliente}')
-    while True: 
-        info = con.recv(1024).decode('utf-8')
-        if not info: break
+print("Servidor iniciado. Para encerrar, digite 'exit'.")
 
-        if info in trechos_disponiveis and trechos_disponiveis[info] >= 1:
+try:
+    while True:
+        con, cliente = tcp.accept()
+        print(f'Conectado a: {cliente}')
+        while True: 
+            try:
+                info = con.recv(1024).decode('utf-8')
+                if not info:
+                    break
+                
+                if info == 'exit':  
+                    print("Comando de encerramento recebido. Encerrando o servidor...")
+                    con.sendall(str.encode('Servidor encerrando...'))
+                    con.close()
+                    tcp.close()
+                    exit(0)  
 
-            disponivel = 'S'
-            tcp.sendall(str.encode(info))
-            resp = con.recv(1024).decode('utf-8')
-            if resp == 'S':
-                trechos_disponiveis[info] -= 1
-                compra_realizada = 'S'
-                tcp.sendall(str.encode(compra_realizada))
-            else:
-                compra_realizada = 'N'
-                tcp.sendall(str.encode(compra_realizada))
+                if info in trechos_disponiveis and trechos_disponiveis[info] >= 1:
+                    con.sendall(str.encode('True'))
+                    resp = con.recv(1024).decode('utf-8')
+                    if resp == 'S':
+                        trechos_disponiveis[info] -= 1
+                        con.sendall(str.encode('True'))
+                    else:
+                        con.sendall(str.encode('False'))
+                else:
+                    con.sendall(str.encode('False'))
+                    print(f'Trecho {info} indisponível\n')
 
-        
-        else:
-            print(f'Trecho {info} indisponivel\n')
+                print(f'{cliente} enviou a informação: {info}')
+            
+            except ConnectionResetError:
+                print(f'Conexão com {cliente} foi resetada inesperadamente')
+                break
+            except OSError as e:
+                print(f'Erro de conexão: {e}')
+                break
+            except Exception as e:
+                print(f'Erro inesperado: {e}')
+                break
 
-        print(f'{cliente} enviou a informação: {info}')
-    print(f'Conexão com {cliente} encerrada\n')
-    con.close()
+        print(f'Conexão com {cliente} encerrada\n')
+        con.close()
+
+except KeyboardInterrupt:
+    print("\nServidor encerrado via interrupção do teclado.")
+    tcp.close()
