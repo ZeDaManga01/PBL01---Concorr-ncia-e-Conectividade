@@ -24,6 +24,11 @@ while info != '\x18':
     tcp.sendall(str.encode(info))
     disp_info = tcp.recv(1024).decode('utf-8')
 
+    if info == 'exit':
+        print('Conexão com o servidor encerrada')
+        tcp.close()
+        break
+
     if disp_info == 'True':
         resp = input('Trecho disponível!\n\nDeseja Comprar?\nS ou N\n')
         tcp.sendall(str.encode(resp))
