@@ -1,12 +1,9 @@
 import socket
 import threading
+import json
 
-# Trechos disponíveis e suas quantidades
-trechos_disponiveis = {
-    "Belém > Fortaleza": 10,
-    "Fortaleza > São Paulo": 15,
-    "São Paulo > Curitiba": 5
-}
+with open('rotas_voos_brasil.json', 'r') as json_file:
+    trechos_disponiveis = json.load(json_file)
 
 def get_server_info():
     """Solicita ao usuário o IP e a porta do servidor."""
@@ -55,7 +52,11 @@ def process_request(con, info):
         con.sendall(str.encode('True'))
         resp = con.recv(1024).decode('utf-8')
         if resp == 'S':
+            
             trechos_disponiveis[info] -= 1
+
+            with open('rotas_voos_brasil.json', 'w') as json_file:
+                json.dump(trechos_disponiveis, json_file)
             return True
         else:
             return False
