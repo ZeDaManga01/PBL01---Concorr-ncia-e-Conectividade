@@ -1,5 +1,5 @@
 import socket
-
+#Modularizar depois
 HOST = '127.0.0.1'    
 PORT = 6924
 
@@ -42,3 +42,5 @@ while info != '\x18':
 
 
 tcp.close()
+
+
