@@ -1,0 +1,22 @@
+[
+    {
+        "ID": "cabeçadegelo",
+        "Senha": "senha123",
+        "Estado": "inicial"
+    },
+    {
+        "ID": "cleituhasta",
+        "Senha": "senha456",
+        "Estado": "seleção de voo"
+    },
+    {
+        "ID": "amali",
+        "Senha": "senha789",
+        "Estado": "pagamento"
+    },
+    {
+        "ID": "jeronimo",
+        "Senha": "senha101",
+        "Estado": "inicial"
+    }
+]

@@ -2,8 +2,7 @@ import socket
 import threading
 import json
 
-with open('rotas_voos_brasil.json', 'r') as json_file:
-    trechos_disponiveis = json.load(json_file)
+
 
 def get_server_info():
     """Solicita ao usuário o IP e a porta do servidor."""
@@ -46,23 +45,36 @@ def handle_client(con, cliente):
         print(f'Conexão com {cliente} encerrada')
         con.close()
 
-def process_request(con, info):
-    #Processa a solicitação do cliente, verifica e atualiza a disponibilidade dos trechos.
-    if info in trechos_disponiveis and trechos_disponiveis[info] >= 1:
-        con.sendall(str.encode('True'))
-        resp = con.recv(1024).decode('utf-8')
-        if resp == 'S':
-            
-            trechos_disponiveis[info] -= 1
+def process_request(con, info): #Processa a solicitação do cliente, verifica e atualiza a disponibilidade dos trechos.
 
-            with open('rotas_voos_brasil.json', 'w') as json_file:
-                json.dump(trechos_disponiveis, json_file)
-            return True
-        else:
-            return False
+    #Formatando a infomação enviada pelo client
+    info = info.lower()
+    origem,destino = info.split('>')
+    origem = origem.strip()
+    destino = destino.strip()
+
+
+    with open('Trechos.json', 'r') as json_file:
+        trechos_disponiveis = json.load(json_file)
+    for trecho in trechos_disponiveis:
+        if origem == trecho['Origem'] and destino == trecho['Destino']:
+            if trecho['Vagas'] > 0:
+                trecho['Vagas']
+                con.sendall(str.encode('True'))
+                resp = con.recv(1024).decode('utf-8')
+                if resp == 'S':
+                    
+                    trecho['Vagas'] -= 1
+
+                    with open('Trechos.json', 'w') as json_file:
+                            json.dump(trechos_disponiveis, json_file, ensure_ascii=False, indent=4)
+                    return True
+                else:
+                    return False
     return False
 
 def accept_connections(tcp):
+
     #Aceita conexões de clientes e cria uma nova thread para cada um.
     while True:
         con, cliente = tcp.accept()
@@ -70,6 +82,7 @@ def accept_connections(tcp):
         client_thread.start()
 
 def main():
+
     # Função principal que coordena a execução do servidor
     host, port = get_server_info()
     tcp = start_server(host, port)
