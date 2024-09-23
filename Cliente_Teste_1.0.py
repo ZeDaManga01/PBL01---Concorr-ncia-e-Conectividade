@@ -14,39 +14,45 @@ def connect_to_server(host, port):
     print(f"Conectado ao servidor {host}:{port}. Pressione Ctrl+X para sair.")
     return tcp
 
-def send_request(tcp, info):
-    """Envia uma solicitação ao servidor e recebe a resposta."""
-    tcp.sendall(str.encode(info))
-    return tcp.recv(1024).decode('utf-8')
 
 def process_purchase(tcp):
     """Gerencia o processo de compra do trecho."""
-    resp = input('Trecho disponível!\n\nDeseja Comprar?\nS ou N\n')
+    resp = input('Trecho disponível!\n\nDeseja Comprar? (S/N)\n')
+    print(f'log:{resp}')
     tcp.sendall(str.encode(resp))
-    compra_resultado = tcp.recv(1024).decode('utf-8')
+    try:
+        compra_resultado = tcp.recv(1024).decode('utf-8')
+    except Exception as e:
+            print(f'Erro ao processar a solicitação: {e}')
+    finally:
+        print('Deu')
     
     if compra_resultado == 'True':
-        print('Compra realizada\n')
+        print('Compra realizada com sucesso!')
+    elif compra_resultado == 'False':
+        print('Compra não realizada.')
     else:
-        print('Compra não realizada\n')
+        print('Resposta do servidor não esperada.')
 
 def handle_interaction(tcp):
     """Loop principal de interação com o servidor."""
-    info = "a"
-    
-    while info != '\x18':  # Ctrl+X para sair
-        info = input('Informe o trecho do voo\n')
+    while True:
+        info = input('Informe o trecho do voo no formato Origem>Destino\n')
         if info == 'exit':
+            tcp.sendall(str.encode(info))
             print('Conexão com o servidor encerrada')
             tcp.close()
             break
         
-        disp_info = send_request(tcp, info)
+        tcp.sendall(str.encode(info))
+        resposta = tcp.recv(1024).decode('utf-8')
 
-        if disp_info == 'True':
+        if resposta == 'True':
             process_purchase(tcp)
+        elif resposta == 'Trecho indisponível ou vagas esgotadas.\n':
+            print('Trecho indisponível ou vagas esgotadas.')
         else:
-            print('Trecho indisponível\n')
+            print('Resposta do servidor não esperada.')
 
 def main():
     """Função principal que orquestra a execução do cliente."""

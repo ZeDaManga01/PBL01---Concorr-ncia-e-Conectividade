@@ -107,7 +107,7 @@
     {
         "Origem": "aracaju",
         "Destino": "salvador",
-        "Vagas": 10
+        "Vagas": 9
     },
     {
         "Origem": "aracaju",
@@ -2967,7 +2967,7 @@
     {
         "Origem": "salvador",
         "Destino": "rio de janeiro",
-        "Vagas": 10
+        "Vagas": 9
     },
     {
         "Origem": "salvador",
