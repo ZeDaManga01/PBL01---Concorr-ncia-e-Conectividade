@@ -1,5 +1,4 @@
 import json
-
 # Lista de capitais brasileiras
 capitais = [
     "Aracaju", "Belém", "Belo Horizonte", "Boa Vista", "Brasília", 
@@ -9,7 +8,6 @@ capitais = [
     "Rio Branco", "Rio de Janeiro", "Salvador", "São Luís", "São Paulo", 
     "Teresina", "Vitória"
 ]
-
 # Gerando os voos entre todas as capitais
 voos = []
 for origem in capitais:
@@ -18,12 +16,10 @@ for origem in capitais:
             voo = {
                 "Origem": origem.lower(),
                 "Destino": destino.lower(),
-                "Vagas": 10  # Quantidade fixa de vagas por voo
+                "Vagas": 15  # Quantidade fixa de vagas por voo
             }
             voos.append(voo)
-
-file_path = 'Trechos.json'
+file_path = 'Voos.json'
 with open(file_path, 'w') as f:
     json.dump(voos, f, ensure_ascii=False, indent=4)
-
 file_path
