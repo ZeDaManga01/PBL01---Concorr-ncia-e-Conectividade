@@ -2,8 +2,8 @@ import socket
 
 def info_servidor(): #Solicita ao usuário o IP e a porta do servidor.
 
-    host = input('Insira o endereço IP ou pressione Enter para usar o padrão (127.0.0.1):\n') or '127.0.0.1'
-    port = input('Insira a porta de conexão com o servidor ou pressione Enter para usar o padrão (6924):\n') or 6924
+    host = 'localhost'
+    port = 61624
     
     return host, int(port)
 
@@ -45,7 +45,7 @@ def handle_interaction(tcp): #Loop principal de interação com o servidor.
 
     info = "a"
     
-    while info != '\x18':  # Ctrl+X para sair
+    while info != '\x18':
 
         info = input('Informe o trecho do voo\n')
 
