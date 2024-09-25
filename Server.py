@@ -6,8 +6,8 @@ mutex = threading.Lock()
 
 def info_servidor(): #Solicita ao usuário o IP e a porta do servidor. 
 
-    host = input('Insira o endereço IP ou pressione Enter para usar o padrão (127.0.0.1):\n') or '127.0.0.1'
-    port = input('Insira a porta de conexão com o servidor ou pressione Enter para usar o padrão (6924):\n') or 6924
+    host = '0.0.0.0'
+    port = 61624
 
     return host, int(port)
 
@@ -18,7 +18,7 @@ def iniciar_servidor(host, port): #Inicializa o servidor e começa a escutar con
     tcp.bind((host, port))
     tcp.listen(8)
 
-    print(f"Servidor iniciado no IP {host} e porta {port}. Para encerrar, digite 'exit'.")
+    print(f"Servidor iniciado no IP {host} e porta {port}.")
 
     return tcp
 
@@ -83,7 +83,7 @@ def processar_solicitacao(con, info): #Processa a solicitação do cliente, veri
                 if trecho['Vagas'] > 0:
 
                     con.sendall(str.encode('True'))
-                    con.settimeout(15)
+                    con.settimeout(30)
                     resp = con.recv(1024).decode('utf-8')
 
                     if resp == 'S':
